@@ -6,12 +6,14 @@ import {
   Get,
   Query,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { ReservationDto, ReservationSearchOptions } from './interfaces';
 import { Reservation } from './reservation.schema';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
-// @UseGuards(new RolesGuard(['client']))
+@UseGuards(new RolesGuard(['client']))
 @Controller('api/client/reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
@@ -34,7 +36,7 @@ export class ReservationsController {
   }
 }
 
-// @UseGuards(new RolesGuard(['manager']))
+@UseGuards(new RolesGuard(['manager']))
 @Controller('api/manager/reservations')
 export class ReservationsManagerController {
   constructor(private readonly reservationsService: ReservationsService) {}

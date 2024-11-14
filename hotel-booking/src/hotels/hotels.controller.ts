@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Put, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { HotelsService } from './hotels.service';
 import { HotelRoomsService } from './hotel-rooms.service';
 import {
@@ -8,8 +17,9 @@ import {
 } from './interfaces';
 import { Hotel } from './hotel.schema';
 import { HotelRoom } from './hotel-room.schema';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
-// @UseGuards(new RolesGuard(['admin']))
+@UseGuards(new RolesGuard(['admin']))
 @Controller('api/admin/hotels')
 export class HotelsController {
   constructor(private readonly hotelsService: HotelsService) {}
@@ -59,7 +69,7 @@ export class HotelsController {
 }
 
 // Контроллер для управления комнатами
-// @UseGuards(new RolesGuard(['admin']))
+@UseGuards(new RolesGuard(['admin']))
 @Controller('api/admin/hotel-rooms')
 export class HotelRoomsController {
   constructor(private readonly hotelRoomsService: HotelRoomsService) {}
@@ -90,7 +100,6 @@ export class HotelRoomsController {
 
   @Get()
   async search(@Query() params: SearchRoomsParams): Promise<any> {
-    console.log('ssssss');
     const rooms = await this.hotelRoomsService.search(params);
     return Promise.all(rooms.map((room) => room.populate('hotel'))); // Заполняем данные гостиницы
   }

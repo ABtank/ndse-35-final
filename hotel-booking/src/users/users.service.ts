@@ -5,10 +5,29 @@ import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './create-user.dto';
 import { IUserService, SearchUserParams } from './interfaces';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService implements IUserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.findByEmail(email);
+    if (user && (await bcrypt.compare(password, user.passwordHash))) {
+      return user; // Если пользовател найден и пароль совпадает
+    }
+    return null;
+  }
+
+  async login(user: User) {
+    const payload = { email: user.email, role: user.role }; // Добавляем нужные данные на проверки
+    return {
+      access_token: this.jwtService.sign(payload), // Генерация токена
+    };
+  }
 
   findById(id: string): Promise<UserDocument> {
     return this.userModel.findById(id).exec();

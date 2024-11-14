@@ -9,15 +9,21 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(AuthGuard('local'))
-  async login(
-    @Request() req,
-  ): Promise<{ email: string; name: string; contactPhone: string }> {
-    console.log(req);
-    return {
+  async login(@Request() req): Promise<{
+    email: string;
+    name: string;
+    contactPhone: string;
+    token: string;
+  }> {
+    const token = await this.usersService.login(req.user);
+    const resJson = {
       email: req.user.email,
       name: req.user.name,
       contactPhone: req.user.contactPhone,
+      token: token.access_token,
     };
+    console.log(resJson);
+    return resJson;
   }
 
   @Post('logout')

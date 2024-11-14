@@ -17,7 +17,11 @@ export class User {
   @Prop()
   contactPhone?: string;
 
-  @Prop({ required: true, enum: ['client', 'admin', 'manager'] })
+  @Prop({
+    required: true,
+    enum: ['client', 'admin', 'manager'],
+    default: 'client',
+  })
   role: string;
 }
 
